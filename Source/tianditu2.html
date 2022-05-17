@@ -1,0 +1,166 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
+<meta name="keywords" content="天地图"/> 
+<title>天地图－地图API－范例－行政区划</title>
+<style type="text/css">body,html{width:100%;height:100%;margin:0;font-family:"Microsoft YaHei"}#mapDiv{width:100%;height:100%}input,b,p{margin-left:5px;font-size:14px}</style>
+<script type="text/javascript" src="http://api.tianditu.com/api?v=4.0"></script>
+<script> 
+	var map; 
+	var zoom = 13; 
+	var administrative;
+	var html = "<font style='font-weight:700'>详细信息如下：</font><br/>";
+	function onLoad() 
+	{ 
+		//初始化地图对象 
+	   	map=new T.Map("mapDiv"); 
+	   	//设置显示地图的中心点和级别 
+		map.centerAndZoom(new T.LngLat(116.40969,39.89945),zoom); 
+
+		//创建缩放平移控件对象
+		control = new T.Control.Zoom();
+		//添加缩放平移控件
+		map.addControl(control);
+
+		//允许鼠标滚轮缩放地图
+		map.enableScrollWheelZoom();
+		//创建比例尺控件对象
+		var scale = new T.Control.Scale();
+		//添加比例尺控件
+		map.addControl(scale);
+
+		 //创建对象
+		 var ctrl = new T.Control.MapType();
+		//添加控件
+		map.addControl(ctrl);
+		 
+		//创建对象
+		administrative = new T.AdministrativeDivision();
+		var config = {
+			needSubInfo: false,
+			needAll: false,
+			needPolygon: true,
+			needPre: true,
+			searchType: 1,
+			searchWord: "安徽"
+		};
+		administrative.search(config, searchResult);
+
+		//添加地图点信息
+		var data_info = [[116.417854,39.921988,"地址：北京市东城区王府井大街88号乐天银泰百货八层"],
+			[116.406605,39.921585,"地址：北京市东城区东华门大街"],
+			[116.412222,39.912345,"地址：北京市东城区正义路甲5号"]
+		];
+
+		for(var i=0;i<data_info.length;i++){
+			var marker = new T.Marker(new T.LngLat(data_info[i][0],data_info[i][1]));  // 创建标注
+			//var content = data_info[i][2];
+			var content=
+                "<div style='margin:0px;'>" +
+                "<div style='margin:10px 10px; '>" +
+                "<img style='float:left;margin:0px 10px' src='http://lbs.tianditu.com/images/logo.png' width='101' height='49' title='天安门'/>" +
+                "<div style='margin:10px 0px 10px 120px;'>电话 : (010)88187700 <br>地址：北京市顺义区机场东路国门商务区地理信息产业园2号楼天地图大厦" +
+                "</div>" +
+                "<input  id='keyWord' value='机场' type='text' style='border: 1px solid #cccccc;width: 180px;height: 20px;line-height: 20px;padding-left: 10px;display: block;float: left;'>" +
+                "<input style='margin-left:195px;  width: 80px;height: 24px; text-align: center; background: #5596de;color: #FFF;border: none;display: block;cursor: pointer;' type='button' value='周边搜索'  onClick=\"localsearch.searchNearby(document.getElementById('keyWord').value,marker.getLngLat(),radius)\">" +
+                "</div>" +
+                "</div>";
+			map.addOverLay(marker);               // 将标注添加到地图中
+			addClickHandler(content,marker);
+		}
+		function addClickHandler(content,marker){
+			marker.addEventListener("click",function(e){
+				openInfo(content,e)}
+			);
+		}
+		function openInfo(content,e){
+			var point = e.lnglat;
+			marker = new T.Marker(point);// 创建标注
+			var markerInfoWin = new T.InfoWindow(content,{offset:new T.Point(0,-30)}); // 创建信息窗口对象
+			map.openInfoWindow(markerInfoWin,point); //开启信息窗口
+		}
+	}
+	
+	function searchResult(result)
+	{
+		if(result.getStatus() == 100) 
+		{
+			var data = result.getData();
+			showMsg(data);
+			//document.getElementById("administrativeMsg").innerHTML = html; 
+		}
+		else 
+		{
+			result.getMsg();
+		}
+	}
+	
+	function showMsg(data){
+		for(var i = 0; i < data.length; i++){
+			html += "<font style='font-size:12px'>行政区划名称："+data[i].name+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划简称："+data[i].nameabbrevation+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划英文名称："+data[i].english+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划英文简称："+data[i].englishabbrevation+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划类别(省市县)："+data[i].adminType+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划码："+data[i].cityCode+"</font><br/>";
+			html += "<font style='font-size:12px'>经度："+data[i].lnt+"</font><br/>";
+			html += "<font style='font-size:12px'>纬度："+data[i].lat+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划等级："+data[i].level+"</font><br/>";
+			html += "<font style='font-size:12px'>四角点坐标："+data[i].bound+"</font><br/>";
+			
+			//解释上级行政区划
+			if(data[i].parents){
+				var upLevel = "";
+				if(data[i].parents.country){
+					upLevel += data[i].parents.country.name;
+				}
+				if(data[i].parents.province){
+					upLevel += data[i].parents.province.name;
+				}
+				html += "<font style='font-size:12px'>上级行政区划："+upLevel+"</font><br/><br/>";
+			}
+			
+			if(data[i].points){
+				//绘制行政区划
+				polygon(data[i].points);
+			}
+			
+			//解释下级行政区划
+			if(data[i].child){
+				html += "<font style='font-weight:700'>下级行政区划：</font><br/>";
+				showMsg(data[i].child);
+				console.log(data[i].child.points);
+				if(data[i].child.points){
+					//绘制行政区划
+					polygon(data[i].child.points);
+				}
+			}
+		}
+	}
+	
+	function polygon(points){
+		var pointsArr = [];
+        for (var i = 0; i < points.length; i++) {
+            var regionLngLats = [];
+            var regionArr = points[i].region.split(",");
+            for (var m = 0; m < regionArr.length; m++) {
+                var lnglatArr = regionArr[m].split(" ");
+                var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+                regionLngLats.push(lnglat);
+                pointsArr.push(lnglat);
+            }
+          	//创建面对象
+	        var polygon = new T.Polygon(regionLngLats,{color: "blue", weight: 3, opacity: 1, fillColor: "#FFFFFF", fillOpacity: 0.3});
+	      	//向地图上添加行政区划面
+	        map.addOverLay(polygon);
+        }
+        //显示最佳比例尺
+        map.setViewport(pointsArr);
+	}
+</script> 
+</head> 
+<body onLoad="onLoad()"> 
+	<div id="mapDiv"></div> 
+</body>
+</html>

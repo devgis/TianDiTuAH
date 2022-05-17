@@ -1,0 +1,184 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
+<meta name="keywords" content="天地图"/> 
+<title>天地图－地图API－范例－行政区划</title>
+<style type="text/css">body,html{width:100%;height:100%;margin:0;font-family:"Microsoft YaHei"}#mapDiv{width:100%;height:100%}input,b,p{margin-left:5px;font-size:14px}
+div.tdt-control-copyright.tdt-control
+{
+	display: none;	
+}
+</style>
+<script type="text/javascript" src="http://api.tianditu.com/api?v=4.0"></script>
+<script> 
+	var map; 
+	var zoom = 13; 
+	var administrative;
+	var html = "<font style='font-weight:700'>详细信息如下：</font><br/>";
+	function onLoad() 
+	{ 
+		//初始化地图对象 
+	   	map=new T.Map("mapDiv"); 
+	   	//设置显示地图的中心点和级别 
+		//map.centerAndZoom(new T.LngLat(116.40969,39.89945),zoom); 
+
+		//创建缩放平移控件对象
+		control = new T.Control.Zoom();
+		//添加缩放平移控件
+		map.addControl(control);
+
+		//允许鼠标滚轮缩放地图
+		map.enableScrollWheelZoom();
+		//创建比例尺控件对象
+		var scale = new T.Control.Scale();
+		//添加比例尺控件
+		map.addControl(scale);
+
+		 //创建对象
+		 var ctrl = new T.Control.MapType();
+		//添加控件
+		map.addControl(ctrl);
+		 
+		//创建对象
+		administrative = new T.AdministrativeDivision();
+		var config = {
+			needSubInfo: false,
+			needAll: false,
+			needPolygon: true,
+			needPre: true,
+			searchType: 1,
+			searchWord: "安徽"
+		};
+		administrative.search(config, searchResult);
+
+		//添加地图点信息
+		var p_data = [{},{lng:"118.179303",lat:"30.111192",name:"黄山世界地质公园1",size:"20",url:"?mod=park&id=1",type:"花岗岩地貌, 断裂，水体地貌，冰川地貌"},{lng:"118.169207",lat:"30.966896",name:"马仁山国家地质公园",size:"5.769",url:"?mod=park&id=2",type:"层型剖面, 火山岩地貌, 火山机构"},{lng:"118.046452",lat:"29.819613",name:"齐云山国家地质公园",size:"110",url:"?mod=park&id=3",type:"丹霞地貌, 古动物化石产地"},{lng:"118.014323",lat:"30.821472",name:"丫山国家地质公园",size:"65",url:"?mod=park&id=4",type:"层型剖面, 碳酸盐岩地貌"},{lng:"117.183938",lat:"31.846924",name:"大蜀山紫蓬山省级地质公园",size:"126.28",url:"?mod=park&id=5",type:"层型剖面, 火山机构"},{lng:"117.283437",lat:"30.925416",name:"浮山国家地质公园",size:"50",url:"?mod=park&id=6",type:"火山岩地貌, 火山机构"},{lng:"116.466287",lat:"30.739246",name:"天柱山世界地质公园",size:"413.14",url:"?mod=park&id=7",type:"花岗岩地貌 ，古动物化石产地，褶皱、变形"},{lng:"117.541298",lat:"30.020018",name:"牯牛降国家地质公园",size:"110",url:"?mod=park&id=8",type:"花岗岩地貌"},{lng:"117.554066",lat:"30.232249",name:"石台溶洞群省级地质公园",size:"1403",url:"?mod=park&id=9",type:"碳酸盐岩地貌"},{lng:"117.830512",lat:"30.484894",name:"九华山国家地质公园",size:"120",url:"?mod=park&id=10",type:"侵入岩剖面, 碳酸盐岩地貌, 花岗岩地貌"},{lng:"119.612912",lat:"31.122028",name:"太极洞国家地质公园",size:"39",url:"?mod=park&id=11",type:"碳酸盐岩地貌"},{lng:"118.148274",lat:"33.003892",name:"女山省级地质公园",size:"1.025",url:"?mod=park&id=12",type:"火山岩剖面, 火山机构"},{lng:"117.611152",lat:"33.872491",name:"磬云山国家地质公园",size:"50",url:"?mod=park&id=13",type:"地质事件剖面, 采矿遗址, 碳酸盐岩地貌"},{lng:"117.568952",lat:"32.661897",name:"凤阳山国家地质公园",size:"61",url:"?mod=park&id=14",type:"碳酸盐岩地貌"},{lng:"116.8076",lat:"32.633391",name:"八公山国家地质公园",size:"120",url:"?mod=park&id=15",type:"层型剖面, 古生物群化石产地"},{lng:"115.781582",lat:"31.174825",name:"安徽大别山（六安）国家地质公园",size:"2700",url:"?mod=park&id=16",type:"断裂, 瀑布, 花岗岩地貌, 碎屑岩地貌"},{lng:"118.1409",lat:"31.790332",name:"褒禅山省级地质公园",size:"14.69",url:"?mod=park&id=17",type:"碳酸盐岩地貌"},{lng:"116.241671",lat:"34.559763",name:"砀山古黄河省级地质公园",size:"78.86",url:"?mod=park&id=18",type:"河流"},{lng:"118.106621",lat:"29.909719",name:"休宁蓝田生物群",size:"14.7",url:"?mod=opark&id=2",type:"古生物群化石产地"},{lng:"118.778711",lat:"30.346214",name:"宁国胡乐地质遗迹保护区",size:"24.51",url:"?mod=opark&id=12",type:"层型剖面"},{lng:"117.829916",lat:"31.623274",name:"巢湖平顶山马家山地质遗迹区",size:"",url:"?mod=opark&id=27",type:"地层剖面, 古人类化石产地, 古生物群化石产地"}];
+
+		var icon = new T.Icon({
+					iconUrl:"http://www.iconpng.com/png/48pxweb/gps.png", //"http://api.tianditu.com/img/map/markerA.png",
+					iconSize: new T.Point(48, 48),
+					iconAnchor: new T.Point(10, 25)
+            	});		
+		for(var i=0;i<p_data.length;i++){
+			var marker = new T.Marker(new T.LngLat(p_data[i].lng,p_data[i].lat));  // 创建标注
+			//var content = p_data[i][2];
+			if(!p_data[i].lng||!p_data[i].lat)
+			{
+				continue;				
+			}
+			
+			if(p_data[i].url&&p_data[i].url.search("opark")!= -1)
+			{
+				marker = new T.Marker(new T.LngLat(p_data[i].lng,p_data[i].lat),{icon: icon});  // 创建标注
+			}
+
+			var content=
+                "<div style='margin:0px;'>" +
+                "<div style='margin:10px 10px; '>" +
+                "<img style='float:left;margin:0px 10px' src='http://lbs.tianditu.com/images/logo.png' width='101' height='49' title='"+p_data[i].name+"'/>" +
+				"<div style='margin:10px 0px 10px 120px;'>名称 : "+p_data[i].name+"" +
+                "</div>" +
+                "<div style='margin:10px 0px 10px 120px;'>类型 : "+p_data[i].type+"" +
+                "</div>" +
+                //"<input  id='keyWord' value='机场' type='text' style='border: 1px solid #cccccc;width: 180px;height: 20px;line-height: 20px;padding-left: 10px;display: block;float: left;'>" +
+                "<a style='margin-left:195px;  width: 80px;height: 24px; text-align: center; background: #5596de;color: #FFF;border: none;display: block;cursor: pointer;' href=\"a.php"+p_data[i].url+"\"  >查看</a>" +
+                "</div>";
+			map.addOverLay(marker);               // 将标注添加到地图中
+			addClickHandler(content,marker);
+		}
+		function addClickHandler(content,marker){
+			marker.addEventListener("click",function(e){
+				openInfo(content,e)}
+			);
+		}
+		function openInfo(content,e){
+			var point = e.lnglat;
+			marker = new T.Marker(point);// 创建标注
+			var markerInfoWin = new T.InfoWindow(content,{offset:new T.Point(0,-30)}); // 创建信息窗口对象
+			map.openInfoWindow(markerInfoWin,point); //开启信息窗口
+		}
+	}
+	
+	function searchResult(result)
+	{
+		if(result.getStatus() == 100) 
+		{
+			var data = result.getData();
+			showMsg(data);
+			//document.getElementById("administrativeMsg").innerHTML = html; 
+		}
+		else 
+		{
+			result.getMsg();
+		}
+	}
+	
+	function showMsg(data){
+		for(var i = 0; i < data.length; i++){
+			html += "<font style='font-size:12px'>行政区划名称："+data[i].name+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划简称："+data[i].nameabbrevation+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划英文名称："+data[i].english+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划英文简称："+data[i].englishabbrevation+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划类别(省市县)："+data[i].adminType+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划码："+data[i].cityCode+"</font><br/>";
+			html += "<font style='font-size:12px'>经度："+data[i].lnt+"</font><br/>";
+			html += "<font style='font-size:12px'>纬度："+data[i].lat+"</font><br/>";
+			html += "<font style='font-size:12px'>行政区划等级："+data[i].level+"</font><br/>";
+			html += "<font style='font-size:12px'>四角点坐标："+data[i].bound+"</font><br/>";
+			
+			//解释上级行政区划
+			if(data[i].parents){
+				var upLevel = "";
+				if(data[i].parents.country){
+					upLevel += data[i].parents.country.name;
+				}
+				if(data[i].parents.province){
+					upLevel += data[i].parents.province.name;
+				}
+				html += "<font style='font-size:12px'>上级行政区划："+upLevel+"</font><br/><br/>";
+			}
+			
+			if(data[i].points){
+				//绘制行政区划
+				polygon(data[i].points);
+			}
+			
+			//解释下级行政区划
+			if(data[i].child){
+				html += "<font style='font-weight:700'>下级行政区划：</font><br/>";
+				showMsg(data[i].child);
+				console.log(data[i].child.points);
+				if(data[i].child.points){
+					//绘制行政区划
+					polygon(data[i].child.points);
+				}
+			}
+		}
+	}
+	
+	function polygon(points){
+		var pointsArr = [];
+        for (var i = 0; i < points.length; i++) {
+            var regionLngLats = [];
+            var regionArr = points[i].region.split(",");
+            for (var m = 0; m < regionArr.length; m++) {
+                var lnglatArr = regionArr[m].split(" ");
+                var lnglat = new T.LngLat(lnglatArr[0], lnglatArr[1]);
+                regionLngLats.push(lnglat);
+                pointsArr.push(lnglat);
+            }
+          	//创建面对象
+	        var polygon = new T.Polygon(regionLngLats,{color: "blue", weight: 3, opacity: 1, fillColor: "#FFFFFF", fillOpacity: 0.3});
+	      	//向地图上添加行政区划面
+	        map.addOverLay(polygon);
+        }
+        //显示最佳比例尺
+        map.setViewport(pointsArr);
+	}
+</script> 
+</head> 
+<body onLoad="onLoad()"> 
+	<div id="mapDiv"></div> 
+</body>
+</html>

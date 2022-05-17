@@ -1,0 +1,1 @@
+http://map.tianditu.com/data/query?postStr=%7B%22yingjiType%22%3A0%2C%22sourceType%22%3A0%2C%22keyWord%22%3A%22%E5%AE%89%E5%BE%BD%22%2C%22level%22%3A7%2C%22mapBound%22%3A%22111.23657%2C27.61541%2C124.22241%2C36.12013%22%2C%22queryType%22%3A1%2C%22start%22%3A0%2C%22count%22%3A10%2C%22queryTerminal%22%3A10000%7D&type=query
